@@ -4,13 +4,16 @@ TITLE Programming Assignment #2     (prog02.asm)
 ; OSU email address: hicksche@oregonstate.edu
 ; Course number/section: CS 271-400
 ; Project Number: Program #2           Due Date: January 26, 2020 by 11:59 PM
-; Description: This program acquires an integer, n, between 1-46 and displays all
-;	of the Fibonacci numbers up to and including the nth term. This program also 
-;	validates user input to ensure an integer between 1-46 is entered.
+;
+; Description: This program acquires from the user an integer, n, between 1-46 and
+;	calculates and displays all of the Fibonacci numbers up to and including the nth 
+;	term. The program utilizes a counted loop for calculating Fibonacci terms and a 
+;	post-test loop is implemented to validate user input, ensuring an integer between
+;	1-46 is entered.
 
 INCLUDE Irvine32.inc
 
-UPPER_LIMIT 	EQU		46			;defines the upper limit as a constant = 46 
+UPPER_LIMIT EQU		46			;defines the upper limit as a constant = 46 
 LOWER_LIMIT	EQU		1			;defines the lower limit as a constant = 1
 TERM_LIMIT	EQU		5			;defines limit of terms printed on a line = 5
 
@@ -37,10 +40,16 @@ userNum		DWORD	?			;store n, the number of terms selected by user
 fibNum		DWORD	?			;first term in Fibonacci seq. set to 1
 termCount	DWORD	0			;counter for number of terms on each line 
 
+;Extra credit contents: variables and messages to user
+ecDes1		BYTE	"**EC: Compute the execution time of the loop", 0
+timeMsg1	BYTE	"The timer for the loop calculation starts...now!", 0
+timeMsg2	BYTE	"This Fibonacci calculation took ", 0
+timeMsg3	BYTE	" milliseconds to calculate and display!", 0
+startTime	DWORD	?
 
 .code
 main PROC
-;Display introduction
+;display introduction
 introduction:
 	mov		edx, OFFSET progTitle			;print program and author name
 	call	WriteString
@@ -49,8 +58,12 @@ introduction:
 	call	WriteString
 	call	Crlf
 	call	Crlf
+	mov		edx, OFFSET ecDes1				;print extra credit description
+	call	WriteString
+	call	Crlf
+	call	Crlf
 
-;Acquire user name and greet the user
+;acquire user name and greet the user
 	mov		edx, OFFSET greeting1			;get user name
 	call	WriteString
 	mov		edx, OFFSET userName
@@ -66,7 +79,7 @@ introduction:
 	call	Crlf
 	call	Crlf
 
-;Instructions for the user 
+;instructions for the user 
 userInstructions:
 	mov		edx, OFFSET instruc1			;print instructions for the user
 	call	WriteString
@@ -76,7 +89,7 @@ userInstructions:
 	call	Crlf
 	call	Crlf
 
-;Validate the user entered a number of terms between 1-46 using a post-test loop
+;validate the user entered a number of terms between 1-46 using a post-test loop
 getUserData:
 	mov		edx, OFFSET numPrompt			;get number of terms selected from user
 	call	WriteString
@@ -97,10 +110,16 @@ err:
 valid:
 	mov		userNum, eax					;store the user choice in variable
 	call	Crlf
+	mov		edx, OFFSET timeMsg1			;prints message to user that timer has started
+	call	WriteString
+	call	Crlf
+	call	Crlf
+	call	GetMseconds						;procedure used to store start time for loop
+	mov		startTime, eax
 
-;Display Fibonacci numbers up to and including the number of terms selected by user
+;display Fibonacci numbers up to and including the number of terms selected by user
 ;using a counted loop - The second-order Fibonacci sequence begins with the first
-;two terms equal to one and all other terms are calculated as the sum previous
+;two terms equal to one and all other terms are calculated as the sum of the previous
 ;two terms in an algorithm where f(n) = f(n-2) + f(n-1), like so: 
 ;1+1=2, 1+2=3, 2+3=5, etc.
 
@@ -112,6 +131,8 @@ displayFibs:
 	call	WriteString
 	inc		termCount
 	dec		userNum
+	cmp		userNum, 0						;check that userNum is not <= 0
+	jle		timerStop						;jump to timerStop if userNum was 1
 	mov		ebx, 1							;set ebx as second term = 1, (n-1)
 	mov		eax, ebx						;print second term to screen
 	call	WriteDec
@@ -119,6 +140,8 @@ displayFibs:
 	call	WriteString
 	inc		termCount
 	dec		userNum
+	cmp		userNum, 0						;check that userNum is not <= 0
+	jle		timerStop						;jump to timerStop if userNum was 2
 	mov		ecx, userNum					;place userNum in ecx as loop control
 	
 ;calculate and display Fibonacci numbers beyond first two terms
@@ -143,6 +166,18 @@ continue:
 	loop	fibLoop							;subtract one from ecx and continue
 											;until userNum of terms is printed
 
+timerStop:
+	call	Crlf
+	call	Crlf
+	call	GetMseconds
+	sub		eax, startTime					;value in EAX = loop time, in ms
+	mov		edx, OFFSET timeMsg2			;prints how long the calculation took in ms
+	call	WriteString
+	call	WriteDec
+	mov		edx, OFFSET	timeMsg3
+	call	WriteString
+	call	Crlf
+	
 ;Bid the user adieu
 farewell:
 	call	Crlf
