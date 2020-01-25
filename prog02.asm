@@ -2,6 +2,7 @@ TITLE Programming Assignment #2     (prog02.asm)
 
 ; Author: Chelsea Marie Hicks
 ; OSU email address: hicksche@oregonstate.edu
+;
 ; Course number/section: CS 271-400
 ; Project Number: Program #2           Due Date: January 26, 2020 by 11:59 PM
 ;
