@@ -42,6 +42,7 @@ termCount	DWORD	0			;counter for number of terms on each line
 
 ;Extra credit contents: variables and messages to user
 ecDes1		BYTE	"**EC: Compute the execution time of the loop", 0
+ecDes2		BYTE	"**EC: Turn this program into a color party ", 0
 timeMsg1	BYTE	"The timer for the loop calculation starts...now!", 0
 timeMsg2	BYTE	"This Fibonacci calculation took ", 0
 timeMsg3	BYTE	" milliseconds to calculate and display!", 0
@@ -51,25 +52,38 @@ startTime	DWORD	?
 main PROC
 ;display introduction
 introduction:
+	mov		eax, lightCyan					;print program title in light cyan
+	call	SetTextColor
 	mov		edx, OFFSET progTitle			;print program and author name
 	call	WriteString
 	call	Crlf
+	mov		eax, lightMagenta				;print author name in light magenta
+	call	SetTextColor
 	mov		edx, OFFSET authName
 	call	WriteString
 	call	Crlf
 	call	Crlf
+	mov		eax, yellow						;print extra credit in yellow
+	call	SetTextColor
 	mov		edx, OFFSET ecDes1				;print extra credit description
+	call	WriteString
+	call	Crlf
+	mov		edx, OFFSET ecDes2				
 	call	WriteString
 	call	Crlf
 	call	Crlf
 
 ;acquire user name and greet the user
+	mov		eax, white						;return to white print
+	call	SetTextColor
 	mov		edx, OFFSET greeting1			;get user name
 	call	WriteString
 	mov		edx, OFFSET userName
 	mov		ecx, SIZEOF userName
 	call	ReadString
 
+	mov		eax, lightCyan					;print greeting in light cyan
+	call	SetTextColor
 	mov		edx, OFFSET greeting2			;greet the user
 	call	WriteString
 	mov		edx, OFFSET userName
@@ -81,6 +95,8 @@ introduction:
 
 ;instructions for the user 
 userInstructions:
+	mov		eax, white						;return to white print
+	call	SetTextColor
 	mov		edx, OFFSET instruc1			;print instructions for the user
 	call	WriteString
 	call	Crlf
@@ -91,6 +107,8 @@ userInstructions:
 
 ;validate the user entered a number of terms between 1-46 using a post-test loop
 getUserData:
+	mov		eax, white						;ensure white print used 
+	call	SetTextColor
 	mov		edx, OFFSET numPrompt			;get number of terms selected from user
 	call	WriteString
 	call	ReadInt
@@ -101,6 +119,8 @@ getUserData:
 	jmp		valid			
 
 err:
+	mov		eax, lightRed					;print error message in light red
+	call	SetTextColor
 	mov		edx, OFFSET errMsg				;print error message to screen
 	call	WriteString
 	call	Crlf
@@ -110,6 +130,8 @@ err:
 valid:
 	mov		userNum, eax					;store the user choice in variable
 	call	Crlf
+	mov		eax, yellow						;print timer start msg in yellow
+	call	SetTextColor
 	mov		edx, OFFSET timeMsg1			;prints message to user that timer has started
 	call	WriteString
 	call	Crlf
@@ -124,6 +146,8 @@ valid:
 ;1+1=2, 1+2=3, 2+3=5, etc.
 
 displayFibs:
+	mov		eax, lightCyan					;print Fibonacci numbers light cyan 
+	call	SetTextColor
 	mov		fibNum, 1						;set fibNum as first term = 1, (n-2)
 	mov		eax, fibNum						;print the first term to screen
 	call	WriteDec
@@ -169,6 +193,8 @@ continue:
 timerStop:
 	call	Crlf
 	call	Crlf
+	mov		eax, yellow						;print execution time in yellow 
+	call	SetTextColor
 	call	GetMseconds
 	sub		eax, startTime					;value in EAX = loop time, in ms
 	mov		edx, OFFSET timeMsg2			;prints how long the calculation took in ms
@@ -180,6 +206,8 @@ timerStop:
 	
 ;Bid the user adieu
 farewell:
+	mov		eax, white						;ensure white print used 
+	call	SetTextColor
 	call	Crlf
 	call	Crlf
 	mov		edx, OFFSET closing				;print closing message
